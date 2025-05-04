@@ -1,0 +1,70 @@
+/* Base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #e40c0c;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.title {
+    font-size: 32px;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+}
+
+.chart-container {
+    padding: 20px;
+}
+
+#vis {
+    min-height: 400px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .container {
+        margin: 0;
+    }
+    
+    .title {
+        font-size: 24px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+    }
+    
+    .chart-container {
+        padding: 10px;
+    }
+} 
