@@ -28,43 +28,190 @@
         // Chart specifications
         const specs = {
             "daily-activities": {
-                "title": "Distribution of Daily Activities by Obesity Type",
+                "title": "Daily Activities Distribution by Gender and Obesity Type",
+                "transform": [
+                    {
+                        "calculate": "datum.Gender == 'Female' ? -datum.count : datum.count",
+                        "as": "signed_count"
+                    },
+                    {
+                        "calculate": "abs(datum.signed_count)",
+                        "as": "abs_count"
+                    },
+                    {
+                        "calculate": "datum.Gender + '_' + datum.Ob_Type",
+                        "as": "gender_obesity"
+                    }
+                ],
                 "encoding": {
-                    "color": {
+                    "y": {
                         "field": "DAILY_ACT",
                         "type": "nominal",
                         "title": "Daily Activities",
+                        "axis": {
+                            "title": "Daily Activities Level",
+                            "labelAlign": "center"
+                        }
+                    },
+                    "x": {
+                        "field": "signed_count",
+                        "type": "quantitative",
+                        "title": "Number of People",
+                        "axis": {
+                            "format": "d",
+                            "labelExpr": "abs(datum.value)"
+                        }
+                    },
+                    "color": {
+                        "field": "gender_obesity",
+                        "type": "nominal",
+                        "title": "Gender and Obesity Type",
                         "scale": {
-                            "scheme": "blues"
+                            "domain": [
+                                "Male_Insufficient_Weight", "Male_Normal_Weight", "Male_Obesity_Type_I", 
+                                "Male_Obesity_Type_II", "Male_Overweight_Level_I", "Male_Overweight_Level_II", 
+                                "Male_Obesity_Type_III",
+                                "Female_Insufficient_Weight", "Female_Normal_Weight", "Female_Obesity_Type_I", 
+                                "Female_Obesity_Type_II", "Female_Overweight_Level_I", "Female_Overweight_Level_II", 
+                                "Female_Obesity_Type_III"
+                            ],
+                            "range": [
+                                "#e3f2fd", "#bbdefb", "#64b5f6", "#42a5f5", "#1565c0", "#0d47a1", "#2196f3",
+                                "#ffcdd2", "#ef9a9a", "#ef5350", "#e53935", "#67000d", "#3e0008", "#d32f2f"
+                            ]
+                        },
+                        "legend": {
+                            "orient": "bottom",
+                            "columns": 2,
+                            "title": null
                         }
                     }
-                }
+                },
+                "isSpine": true
             },
             "meals": {
-                "title": "Distribution of Meals per Day by Obesity Type",
+                "title": "Meals per Day Distribution by Gender and Obesity Type",
+                "transform": [
+                    {
+                        "calculate": "datum.Gender == 'Female' ? -datum.count : datum.count",
+                        "as": "signed_count"
+                    },
+                    {
+                        "calculate": "abs(datum.signed_count)",
+                        "as": "abs_count"
+                    },
+                    {
+                        "calculate": "datum.Gender + '_' + datum.Ob_Type",
+                        "as": "gender_obesity"
+                    }
+                ],
                 "encoding": {
-                    "color": {
+                    "y": {
                         "field": "MEALperDAY",
                         "type": "nominal",
                         "title": "Meals per Day",
+                        "axis": {
+                            "title": "Number of Meals",
+                            "labelAlign": "center"
+                        }
+                    },
+                    "x": {
+                        "field": "signed_count",
+                        "type": "quantitative",
+                        "title": "Number of People",
+                        "axis": {
+                            "format": "d",
+                            "labelExpr": "abs(datum.value)"
+                        }
+                    },
+                    "color": {
+                        "field": "gender_obesity",
+                        "type": "nominal",
+                        "title": "Gender and Obesity Type",
                         "scale": {
-                            "scheme": "blues"
+                            "domain": [
+                                "Male_Insufficient_Weight", "Male_Normal_Weight", "Male_Obesity_Type_I", 
+                                "Male_Obesity_Type_II", "Male_Overweight_Level_I", "Male_Overweight_Level_II", 
+                                "Male_Obesity_Type_III",
+                                "Female_Insufficient_Weight", "Female_Normal_Weight", "Female_Obesity_Type_I", 
+                                "Female_Obesity_Type_II", "Female_Overweight_Level_I", "Female_Overweight_Level_II", 
+                                "Female_Obesity_Type_III"
+                            ],
+                            "range": [
+                                "#e3f2fd", "#bbdefb", "#64b5f6", "#42a5f5", "#1565c0", "#0d47a1", "#2196f3",
+                                "#ffcdd2", "#ef9a9a", "#ef5350", "#e53935", "#67000d", "#3e0008", "#d32f2f"
+                            ]
+                        },
+                        "legend": {
+                            "orient": "bottom",
+                            "columns": 2,
+                            "title": null
                         }
                     }
-                }
+                },
+                "isSpine": true
             },
             "water": {
-                "title": "Distribution of Water Consumption by Obesity Type",
+                "title": "Water Consumption Distribution by Gender and Obesity Type",
+                "transform": [
+                    {
+                        "calculate": "datum.Gender == 'Female' ? -datum.count : datum.count",
+                        "as": "signed_count"
+                    },
+                    {
+                        "calculate": "abs(datum.signed_count)",
+                        "as": "abs_count"
+                    },
+                    {
+                        "calculate": "datum.Gender + '_' + datum.Ob_Type",
+                        "as": "gender_obesity"
+                    }
+                ],
                 "encoding": {
-                    "color": {
+                    "y": {
                         "field": "WATER",
                         "type": "nominal",
                         "title": "Water Consumption",
+                        "axis": {
+                            "title": "Water Intake Level",
+                            "labelAlign": "center"
+                        }
+                    },
+                    "x": {
+                        "field": "signed_count",
+                        "type": "quantitative",
+                        "title": "Number of People",
+                        "axis": {
+                            "format": "d",
+                            "labelExpr": "abs(datum.value)"
+                        }
+                    },
+                    "color": {
+                        "field": "gender_obesity",
+                        "type": "nominal",
+                        "title": "Gender and Obesity Type",
                         "scale": {
-                            "scheme": "blues"
+                            "domain": [
+                                "Male_Insufficient_Weight", "Male_Normal_Weight", "Male_Obesity_Type_I", 
+                                "Male_Obesity_Type_II", "Male_Overweight_Level_I", "Male_Overweight_Level_II", 
+                                "Male_Obesity_Type_III",
+                                "Female_Insufficient_Weight", "Female_Normal_Weight", "Female_Obesity_Type_I", 
+                                "Female_Obesity_Type_II", "Female_Overweight_Level_I", "Female_Overweight_Level_II", 
+                                "Female_Obesity_Type_III"
+                            ],
+                            "range": [
+                                "#e3f2fd", "#bbdefb", "#64b5f6", "#42a5f5", "#1565c0", "#0d47a1", "#2196f3",
+                                "#ffcdd2", "#ef9a9a", "#ef5350", "#e53935", "#67000d", "#3e0008", "#d32f2f"
+                            ]
+                        },
+                        "legend": {
+                            "orient": "bottom",
+                            "columns": 2,
+                            "title": null
                         }
                     }
-                }
+                },
+                "isSpine": true
             },
             "transport": {
                 "title": "Distribution of Transportation Methods by Obesity Type",
@@ -130,7 +277,15 @@
                         header: true,
                         dynamicTyping: true,
                         complete: function(results) {
-                            resolve(results.data);
+                            // Filter out rows with undefined or null values
+                            const cleanData = results.data.filter(row => 
+                                row.DAILY_ACT != null && 
+                                row.MEALperDAY != null && 
+                                row.WATER != null && 
+                                row.Gender && 
+                                row.Ob_Type
+                            );
+                            resolve(cleanData);
                         }
                     });
                 });
@@ -141,62 +296,101 @@
         }
 
         function createBaseSpec(specificSpec, data) {
-            return {
-                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-                "data": { "values": data },
-                "title": specificSpec.title,
-                "mark": {
-                    "type": "bar",
-                    "cornerRadius": 4,
-                    "tooltip": true
-                },
-                "encoding": {
-                    "x": {
-                        "field": "Ob_Type",
-                        "type": "nominal",
-                        "title": "Obesity Type",
-                        "axis": {
-                            "labelAngle": 0
-                        }
-                    },
-                    "y": {
-                        "aggregate": "count",
-                        "title": "Number of People"
-                    },
-                    "color": specificSpec.encoding.color,
-                    "opacity": {
-                        "condition": {
-                            "param": "hover",
-                            "value": 1
+            if (specificSpec.isSpine) {
+                // Create spine chart specification
+                return {
+                    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                    "data": { "values": data },
+                    "title": specificSpec.title,
+                    "transform": [
+                        {
+                            "filter": "datum[specificSpec.encoding.y.field] != null && datum.Gender != null && datum.Ob_Type != null"
                         },
-                        "value": 0.8
+                        {
+                            "aggregate": [{
+                                "op": "count",
+                                "as": "count"
+                            }],
+                            "groupby": [specificSpec.encoding.y.field, "Gender", "Ob_Type"]
+                        },
+                        ...specificSpec.transform
+                    ],
+                    "mark": "bar",
+                    "encoding": {
+                        ...specificSpec.encoding,
+                        "tooltip": [
+                            {"field": specificSpec.encoding.y.field, "title": specificSpec.encoding.y.title},
+                            {"field": "Gender"},
+                            {"field": "Ob_Type", "title": "Obesity Type"},
+                            {"field": "abs_count", "title": "Number of People"}
+                        ]
                     },
-                    "tooltip": [
-                        {"field": "Ob_Type", "title": "Obesity Type"},
-                        specificSpec.encoding.color,
-                        {"aggregate": "count", "title": "Number of People"}
-                    ]
-                },
-                "width": "container",
-                "height": 400,
-                "params": [{
-                    "name": "hover",
-                    "select": {
-                        "type": "point",
-                        "on": "mouseover",
-                        "clear": "mouseout"
+                    "width": "container",
+                    "height": 400,
+                    "config": {
+                        "view": { "stroke": null },
+                        "axis": { "grid": false }
                     }
-                }],
-                "config": {
-                    "view": { "stroke": null },
-                    "axis": { "grid": false },
-                    "legend": {
-                        "orient": "bottom",
-                        "titlePadding": 10,
-                        "padding": 10
+                };
+            } else {
+                // Regular chart specification
+                return {
+                    "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                    "data": { "values": data },
+                    "title": specificSpec.title,
+                    "mark": {
+                        "type": "bar",
+                        "cornerRadius": 4,
+                        "tooltip": true
+                    },
+                    "encoding": {
+                        "x": {
+                            "field": "Ob_Type",
+                            "type": "nominal",
+                            "title": "Obesity Type",
+                            "axis": {
+                                "labelAngle": 0
+                            }
+                        },
+                        "y": {
+                            "aggregate": "count",
+                            "title": "Number of People"
+                        },
+                        "color": specificSpec.encoding.color,
+                        "opacity": {
+                            "condition": {
+                                "param": "hover",
+                                "value": 1
+                            },
+                            "value": 0.8
+                        },
+                        "tooltip": [
+                            {"field": "Ob_Type", "title": "Obesity Type"},
+                            specificSpec.encoding.color,
+                            {"aggregate": "count", "title": "Number of People"}
+                        ]
+                    },
+                    "width": "container",
+                    "height": 400,
+                    "params": [{
+                        "name": "hover",
+                        "select": {
+                            "type": "point",
+                            "on": "mouseover",
+                            "clear": "mouseout"
+                        }
+                    }],
+                    "config": {
+                        "view": { "stroke": null },
+                        "axis": { "grid": false },
+                        "legend": {
+                            "orient": "bottom",
+                            "titlePadding": 10,
+                            "padding": 10
+                        }
                     }
-                }
-            };
+                };
+            }
         }
 
         let currentChart = "daily-activities";
