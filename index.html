@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Obesity Analysis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Obesity Analysis Dashboard</h1>
+        <div class="chart-nav">
+            <button class="chart-button active" data-chart="daily-activities">Daily Activities</button>
+            <button class="chart-button" data-chart="meals">Meals per Day</button>
+            <button class="chart-button" data-chart="water">Water Consumption</button>
+            <button class="chart-button" data-chart="transport">Transportation Methods</button>
+            <button class="chart-button" data-chart="family">Family History</button>
+            <button class="chart-button" data-chart="calories">High-Calorie Food</button>
+            <button class="chart-button" data-chart="gender">Gender Distribution</button>
+        </div>
+        <div id="vis"></div>
+    </div>
+    <script>
+        // Chart specifications
+        const specs = {
+            "daily-activities": {
+                "title": "Distribution of Daily Activities by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "DAILY_ACT",
+                        "type": "nominal",
+                        "title": "Daily Activities",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "meals": {
+                "title": "Distribution of Meals per Day by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "MEALperDAY",
+                        "type": "nominal",
+                        "title": "Meals per Day",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "water": {
+                "title": "Distribution of Water Consumption by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "WATER",
+                        "type": "nominal",
+                        "title": "Water Consumption",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "transport": {
+                "title": "Distribution of Transportation Methods by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "TRANS",
+                        "type": "nominal",
+                        "title": "Transportation Method",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "family": {
+                "title": "Distribution of Family History of Overweight by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "FAM_OVER",
+                        "type": "nominal",
+                        "title": "Family History of Overweight",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "calories": {
+                "title": "Distribution of High-Calorie Food Consumption by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "HIGH_CAL",
+                        "type": "nominal",
+                        "title": "High-Calorie Food Consumption",
+                        "scale": {
+                            "scheme": "blues"
+                        }
+                    }
+                }
+            },
+            "gender": {
+                "title": "Distribution of Gender by Obesity Type",
+                "encoding": {
+                    "color": {
+                        "field": "Gender",
+                        "type": "nominal",
+                        "title": "Gender",
+                        "scale": {
+                            "scheme": "set2"
+                        }
+                    }
+                }
+            }
+        };
+
+        function createBaseSpec(specificSpec) {
+            return {
+                "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+                "data": { "url": "./Elhiz.csv" },  // Updated to use relative path
+                "title": specificSpec.title,
+                "mark": {
+                    "type": "bar",
+                    "cornerRadius": 4,
+                    "tooltip": true
+                },
+                "encoding": {
+                    "x": {
+                        "field": "Ob_Type",
+                        "type": "nominal",
+                        "title": "Obesity Type",
+                        "axis": {
+                            "labelAngle": 0
+                        }
+                    },
+                    "y": {
+                        "aggregate": "count",
+                        "title": "Number of People"
+                    },
+                    "color": specificSpec.encoding.color,
+                    "opacity": {
+                        "condition": {
+                            "param": "hover",
+                            "value": 1
+                        },
+                        "value": 0.8
+                    },
+                    "tooltip": [
+                        {"field": "Ob_Type", "title": "Obesity Type"},
+                        specificSpec.encoding.color,
+                        {"aggregate": "count", "title": "Number of People"}
+                    ]
+                },
+                "width": "container",
+                "height": 400,
+                "params": [{
+                    "name": "hover",
+                    "select": {
+                        "type": "point",
+                        "on": "mouseover",
+                        "clear": "mouseout"
+                    }
+                }],
+                "config": {
+                    "view": { "stroke": null },
+                    "axis": { "grid": false },
+                    "legend": {
+                        "orient": "bottom",
+                        "titlePadding": 10,
+                        "padding": 10
+                    }
+                }
+            };
+        }
+
+        // Initialize with daily activities chart
+        let currentChart = "daily-activities";
+        const embedOpts = { actions: false, theme: "light" };
+
+        function updateChart(chartType) {
+            const spec = createBaseSpec(specs[chartType]);
+            vegaEmbed('#vis', spec, embedOpts);
+        }
+
+        // Add click handlers to buttons
+        document.querySelectorAll('.chart-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Update active button
+                document.querySelector('.chart-button.active').classList.remove('active');
+                e.target.classList.add('active');
+                
+                // Update chart
+                const chartType = e.target.dataset.chart;
+                updateChart(chartType);
+            });
+        });
+
+        // Initialize first chart
+        updateChart(currentChart);
+    </script>
+</body>
+</html> 
