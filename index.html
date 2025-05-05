@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -119,10 +120,30 @@
             }
         };
 
-        function createBaseSpec(specificSpec) {
+        // Load and parse CSV data
+        async function loadData() {
+            try {
+                const response = await fetch('./Elhiz.csv');
+                const csvText = await response.text();
+                return new Promise((resolve) => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        dynamicTyping: true,
+                        complete: function(results) {
+                            resolve(results.data);
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading data:', error);
+                return [];
+            }
+        }
+
+        function createBaseSpec(specificSpec, data) {
             return {
                 "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-                "data": { "url": "./Elhiz.csv" },  // Updated to use relative path
+                "data": { "values": data },
                 "title": specificSpec.title,
                 "mark": {
                     "type": "bar",
@@ -178,12 +199,15 @@
             };
         }
 
-        // Initialize with daily activities chart
         let currentChart = "daily-activities";
         const embedOpts = { actions: false, theme: "light" };
+        let chartData = [];
 
-        function updateChart(chartType) {
-            const spec = createBaseSpec(specs[chartType]);
+        async function updateChart(chartType) {
+            if (chartData.length === 0) {
+                chartData = await loadData();
+            }
+            const spec = createBaseSpec(specs[chartType], chartData);
             vegaEmbed('#vis', spec, embedOpts);
         }
 
