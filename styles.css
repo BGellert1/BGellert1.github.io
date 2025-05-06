@@ -1,0 +1,593 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+/* Theme Selector Styles */
+.theme-selector {
+  position: fixed;
+  top: 360px;
+  left: 20px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.theme-btn {
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.theme-btn:hover {
+  transform: translateY(-1px);
+}
+
+.theme-btn.active {
+  font-weight: 600;
+}
+
+/* Default/Minimal Theme */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 20px;
+  transition: all 0.3s ease;
+  min-height: 100vh;
+}
+
+.container {
+  margin-left: 260px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: calc(100% - 280px);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+h1, h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  width: 100%;
+}
+
+.chart {
+  margin-bottom: 60px;
+  padding: 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  width: 100%;
+  min-height: calc(100vh - 140px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scroll-margin-top: 20px;
+}
+
+.chart > div {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.theme-selector {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.theme-btn {
+  padding: 10px 20px;
+  margin: 0 5px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.theme-btn.active {
+  transform: scale(1.05);
+  font-weight: bold;
+}
+
+/* Light Theme */
+body.light {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+body.light .chart {
+  background-color: #f8f9fa;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+body.light .theme-btn {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+body.light .theme-btn:hover {
+  background-color: #dee2e6;
+}
+
+body.light .theme-btn.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Dark Theme */
+body.dark {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body.dark .chart {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 4px rgba(255,255,255,0.1);
+}
+
+body.dark .theme-btn {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+body.dark .theme-btn:hover {
+  background-color: #505050;
+}
+
+body.dark .theme-btn.active {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Minimal Theme */
+body.minimal {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+body.minimal .chart {
+  background-color: #ffffff;
+  box-shadow: none;
+  border: 1px solid #e0e0e0;
+}
+
+body.minimal .theme-btn {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+}
+
+body.minimal .theme-btn:hover {
+  background-color: #f8f9fa;
+}
+
+body.minimal .theme-btn.active {
+  background-color: #333333;
+  color: white;
+  border-color: #333333;
+}
+
+/* Modern Theme */
+body.modern {
+  background-color: #f0f2f5;
+  color: #2c3e50;
+}
+
+body.modern .chart {
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 12px;
+}
+
+body.modern .theme-btn {
+  background-color: #ffffff;
+  color: #2c3e50;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  border-radius: 8px;
+}
+
+body.modern .theme-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body.modern .theme-btn.active {
+  background-color: #3498db;
+  color: white;
+}
+
+/* Colorful Theme */
+body.colorful {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  color: #2c3e50;
+}
+
+body.colorful .chart {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-radius: 15px;
+}
+
+body.colorful .theme-btn {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #2c3e50;
+  border-radius: 25px;
+}
+
+body.colorful .theme-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+body.colorful .theme-btn.active {
+  background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+  color: white;
+}
+
+/* Pastel Theme */
+body.pastel {
+  background-color: #f8e5e5;
+  color: #5d4037;
+}
+
+body.pastel .chart {
+  background-color: #fff5f5;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid #ffe0e0;
+}
+
+body.pastel .theme-btn {
+  background-color: #ffd5d5;
+  color: #5d4037;
+  border: 1px solid #ffcece;
+}
+
+body.pastel .theme-btn:hover {
+  background-color: #ffe0e0;
+}
+
+body.pastel .theme-btn.active {
+  background-color: #ffb6b6;
+  color: #4a2f2f;
+  border-color: #ff9e9e;
+}
+
+/* Dark Blue Theme */
+body.darkblue {
+  background-color: #1e3d59;
+  color: #ffffff;
+}
+
+body.darkblue .chart {
+  background-color: #2b5278;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  border: 1px solid #34649e;
+}
+
+body.darkblue .theme-btn {
+  background-color: #34649e;
+  color: #ffffff;
+  border: none;
+}
+
+body.darkblue .theme-btn:hover {
+  background-color: #3a70b0;
+}
+
+body.darkblue .theme-btn.active {
+  background-color: #4a8bc9;
+  color: white;
+  box-shadow: 0 0 10px rgba(74,139,201,0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart {
+    min-height: calc(100vh - 180px);
+    padding: 10px;
+  }
+
+  .vega-embed canvas {
+    max-height: calc(100vh - 220px) !important;
+  }
+
+  .container {
+    padding: 10px;
+    margin-top: 40px;
+  }
+
+  .theme-selector {
+    flex-wrap: wrap;
+  }
+  
+  .theme-btn {
+    margin: 5px;
+  }
+  
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}
+
+/* Vega-Lite theme updates */
+.vega-embed {
+  background: transparent !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.vega-embed .vega-actions {
+  display: none !important;
+}
+
+/* Make sure the canvas is centered and fills available space */
+.vega-embed canvas {
+  max-width: 100% !important;
+  max-height: calc(100vh - 180px) !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 auto !important;
+}
+
+/* Navigation Menu */
+.nav-menu {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  border-radius: 8px;
+}
+
+.nav-link {
+  width: 100%;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s ease;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.nav-link:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  background: rgba(0, 0, 0, 0.15);
+  font-weight: 600;
+}
+
+/* Theme-specific navigation styles */
+body.light .nav-link {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+body.light .nav-link:hover {
+  background-color: #dee2e6;
+}
+
+body.light .nav-link.active {
+  background-color: #007bff;
+  color: white;
+}
+
+body.dark .nav-link {
+  background-color: #404040;
+  color: #ffffff;
+}
+
+body.dark .nav-link:hover {
+  background-color: #505050;
+}
+
+body.dark .nav-link.active {
+  background-color: #007bff;
+  color: white;
+}
+
+body.minimal .nav-link {
+  background-color: #ffffff;
+  color: #333333;
+  border: 1px solid #e0e0e0;
+}
+
+body.minimal .nav-link:hover {
+  background-color: #f8f9fa;
+}
+
+body.minimal .nav-link.active {
+  background-color: #333333;
+  color: white;
+  border-color: #333333;
+}
+
+body.modern .nav-link {
+  background-color: #ffffff;
+  color: #2c3e50;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+body.modern .nav-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body.modern .nav-link.active {
+  background-color: #3498db;
+  color: white;
+}
+
+body.colorful .nav-link {
+  background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+  color: #2c3e50;
+}
+
+body.colorful .nav-link:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+body.colorful .nav-link.active {
+  background: linear-gradient(135deg, #5ee7df 0%, #b490ca 100%);
+  color: white;
+}
+
+body.pastel .nav-link {
+  background-color: #ffd5d5;
+  color: #5d4037;
+  border: 1px solid #ffcece;
+}
+
+body.pastel .nav-link:hover {
+  background-color: #ffe0e0;
+}
+
+body.pastel .nav-link.active {
+  background-color: #ffb6b6;
+  color: #4a2f2f;
+  border-color: #ff9e9e;
+}
+
+body.darkblue .nav-link {
+  background-color: #34649e;
+  color: #ffffff;
+}
+
+body.darkblue .nav-link:hover {
+  background-color: #3a70b0;
+}
+
+body.darkblue .nav-link.active {
+  background-color: #4a8bc9;
+  color: white;
+  box-shadow: 0 0 10px rgba(74,139,201,0.5);
+}
+
+/* Adjust container margin to account for sidebar */
+.container {
+  margin-left: 260px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  max-width: calc(100% - 280px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    flex-direction: row;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 0;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .theme-selector {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 0;
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .theme-btn {
+    width: auto;
+  }
+
+  .container {
+    margin-left: 0;
+    margin-top: 140px;
+    max-width: 100%;
+    padding: 10px;
+  }
+}
+
+.panel-title {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  width: 100%;
+  color: inherit;
+}
+
+h2 {
+  margin-bottom: 30px;
+  text-align: center;
+  width: 100%;
+  scroll-margin-top: 20px;
+}
+
+/* Hide all charts and titles by default */
+.chart, h2 {
+  display: none;
+}
+
+/* Show all by default if nothing is targeted */
+body:not(:has(h2:target)) .chart,
+body:not(:has(h2:target)) h2 {
+  display: flex;
+}
+
+/* Show only the targeted title and its chart */
+h2:target {
+  display: block !important;
+}
+
+h2:target + .chart {
+  display: flex !important;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+} 

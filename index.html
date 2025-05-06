@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Obesity Factors Analysis</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <!-- Add XLSX library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="theme-selector">
+    <h3 class="panel-title">Select Theme</h3>
+    <button class="theme-btn" data-theme="light">Light</button>
+    <button class="theme-btn" data-theme="dark">Dark</button>
+    <button class="theme-btn" data-theme="minimal">Minimal</button>
+    <button class="theme-btn" data-theme="modern">Modern</button>
+    <button class="theme-btn" data-theme="colorful">Colorful</button>
+    <button class="theme-btn" data-theme="pastel">Pastel</button>
+    <button class="theme-btn" data-theme="darkblue">Dark Blue</button>
+  </div>
+  <div class="nav-menu">
+    <h3 class="panel-title">Navigation Menu</h3>
+    <a href="#age-distribution" class="nav-link">Age Distribution</a>
+    <a href="#obesity-distribution" class="nav-link">Obesity Distribution</a>
+    <a href="#family-history" class="nav-link">Family History</a>
+    <a href="#calorie-consumption" class="nav-link">Calorie Consumption</a>
+    <a href="#activity-level" class="nav-link">Activity Level</a>
+    <a href="#water-consumption" class="nav-link">Water Consumption</a>
+    <a href="#meals-per-day" class="nav-link">Meals per Day</a>
+    <a href="#transportation" class="nav-link">Transportation</a>
+  </div>
+  <div class="container">
+    <h1>Obesity Analysis</h1>
+    <h2 id="age-distribution">Age Distribution by Gender</h2>
+    <div class="chart" id="chart1"></div>
+    <h2 id="obesity-distribution">Distribution of Obesity Levels</h2>
+    <div class="chart" id="chart2"></div>
+    <h2 id="family-history">Family History of Obesity</h2>
+    <div class="chart" id="chart3"></div>
+    <h2 id="calorie-consumption">High Calorie Food Consumption</h2>
+    <div class="chart" id="chart4"></div>
+    <h2 id="activity-level">Daily Physical Activity Level</h2>
+    <div class="chart" id="chart5"></div>
+    <h2 id="water-consumption">Daily Water Consumption</h2>
+    <div class="chart" id="chart6"></div>
+    <h2 id="meals-per-day">Number of Meals per Day</h2>
+    <div class="chart" id="chart7"></div>
+    <h2 id="transportation">Transportation Method</h2>
+    <div class="chart" id="chart8"></div>
+  </div>
+
+  <script>
+    // Theme switching functionality
+    document.querySelectorAll('.theme-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        document.body.className = button.dataset.theme;
+        document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+      });
+    });
+
+    // Set default theme
+    document.querySelector('[data-theme="minimal"]').classList.add('active');
+
+    // Load and process the data
+    fetch('https://raw.githubusercontent.com/BGellert1/BGellert1.github.io/refs/heads/main/df3.json')
+      .then(response => response.json())
+      .then(data => {
+        // First Chart (Age Distribution) - existing code
+        const ageData = data.filter(d => d.Tenyezok === 'AGE').map(d => {
+          const age = d.Index;
+          const gender = data.find(g => g.Tenyezok === 'Gender' && 
+            JSON.stringify(g.Ob_Type) === JSON.stringify(d.Ob_Type)).Index;
+          return {
+            age_group: age < 20 ? '< 20' :
+                      age < 25 ? '20-24' :
+                      age < 30 ? '25-29' :
+                      age < 35 ? '30-34' :
+                      age < 40 ? '35-39' :
+                      age < 45 ? '40-44' :
+                      age < 50 ? '45-49' :
+                      age < 55 ? '50-54' :
+                      '55+',
+            Gender: gender,
+            Age: age
+          };
+        });
+
+        // Calculate maximum count to set symmetric domain
+        const counts = {};
+        ageData.forEach(d => {
+          const key = `${d.age_group}-${d.Gender}`;
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const maxCount = Math.max(...Object.values(counts));
+
+        // First Chart Specification (existing)
+        const spec1 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": ageData },
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["age_group", "Gender"]
+            },
+            {
+              "calculate": "datum.Gender == 'Female' ? -datum.count : datum.count",
+              "as": "signed_count"
+            }
+          ],
+          "width": 800,
+          "height": 400,
+          "mark": {"type": "bar", "opacity": 0.8},
+          "encoding": {
+            "y": {
+              "field": "age_group",
+              "type": "ordinal",
+              "sort": ["< 20", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "50-54", "55+"],
+              "axis": {
+                "title": "Age Groups",
+                "labelFontSize": 12
+              }
+            },
+            "x": {
+              "field": "signed_count",
+              "type": "quantitative",
+              "axis": {
+                "title": "Count",
+                "format": "d",
+                "labelFontSize": 12,
+                "labelExpr": "abs(datum.value)"
+              },
+              "scale": {
+                "domain": [-maxCount, maxCount]
+              }
+            },
+            "color": {
+              "field": "Gender",
+              "scale": {
+                "domain": ["Male", "Female"],
+                "range": ["#4287f5", "#f542a1"]
+              },
+              "legend": {
+                "title": "Gender",
+                "labelFontSize": 12
+              }
+            },
+            "tooltip": [
+              {"field": "age_group", "title": "Age Group"},
+              {"field": "count", "title": "Count"},
+              {"field": "Gender"}
+            ]
+          },
+          "config": {
+            "view": {"stroke": null},
+            "axis": {
+              "grid": false,
+              "titleFontSize": 14
+            },
+            "legend": {
+              "titleFontSize": 14
+            }
+          }
+        };
+
+        // Second Chart - Obesity Levels Distribution
+        const obesityData = data.filter(d => d.Tenyezok === 'AGE').map(d => ({
+          obesity_level: d.Ob_Type
+        }));
+
+        const spec2 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": obesityData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level"]
+            },
+            {
+              "window": [{
+                "op": "rank",
+                "as": "rank"
+              }],
+              "sort": [{"field": "count", "order": "descending"}]
+            },
+            {
+              "calculate": "20 + 80 * (1 - datum.rank/7)",
+              "as": "columnWidth"
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "opacity": 0.8,
+            "cornerRadius": 4
+          },
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelFontSize": 12,
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "axis": {
+                "title": "Count",
+                "labelFontSize": 12
+              }
+            },
+            "size": {
+              "field": "columnWidth",
+              "type": "quantitative",
+              "legend": null
+            },
+            "color": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "scale": {
+                "domain": [
+                  "Insufficient_Weight",
+                  "Normal_Weight",
+                  "Obesity_Type_I",
+                  "Obesity_Type_II",
+                  "Obesity_Type_III",
+                  "Overweight_Level_I",
+                  "Overweight_Level_II"
+                ],
+                "range": ["#98ee90", "#43a047", "#f44336", "#d32f2f", "#b71c1c", "#ffd54f", "#ff9800"]
+              },
+              "legend": null
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "count", "title": "Count"}
+            ]
+          },
+          "config": {
+            "view": {"stroke": null},
+            "axis": {
+              "grid": false,
+              "titleFontSize": 14
+            }
+          }
+        };
+
+        // Third Chart - Family History of Obesity
+        const familyData = data.filter(d => d.Tenyezok === 'FAM_OVER').map(d => ({
+          obesity_level: d.Ob_Type,
+          family_history: d.Index === 1 ? 'Yes' : 'No'
+        }));
+
+        const spec3 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": familyData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "family_history"]
+            }
+          ],
+          "mark": {"type": "bar", "opacity": 0.8},
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {"title": "Count"}
+            },
+            "color": {
+              "field": "family_history",
+              "type": "nominal",
+              "scale": {
+                "domain": ["Yes", "No"],
+                "range": ["#ff7043", "#90a4ae"]
+              },
+              "legend": {
+                "title": "Family History of Obesity",
+                "orient": "bottom"
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "family_history", "title": "Family History"},
+              {"field": "count", "title": "Count"}
+            ]
+          }
+        };
+
+        // Fourth Chart - High Calorie Food Consumption
+        const calorieData = data.filter(d => d.Tenyezok === 'HIGH_CAL').map(d => ({
+          obesity_level: d.Ob_Type,
+          high_calorie: d.Index === 1 ? 'Yes' : 'No'
+        }));
+
+        const spec4 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": calorieData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "high_calorie"]
+            }
+          ],
+          "mark": {"type": "bar", "opacity": 0.8},
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {"title": "Count"}
+            },
+            "color": {
+              "field": "high_calorie",
+              "type": "nominal",
+              "scale": {
+                "domain": ["Yes", "No"],
+                "range": ["#ffa726", "#90a4ae"]
+              },
+              "legend": {
+                "title": "High Calorie Food Consumption",
+                "orient": "bottom"
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "high_calorie", "title": "High Calorie Diet"},
+              {"field": "count", "title": "Count"}
+            ]
+          }
+        };
+
+        // Fifth Chart - Daily Activity Levels
+        const activityData = data.filter(d => d.Tenyezok === 'DAILY_ACT').map(d => ({
+          obesity_level: d.Ob_Type,
+          activity_level: d.Index === 0 ? "No Activity" :
+                         d.Index === 1 ? "Low Activity" :
+                         d.Index === 2 ? "Moderate Activity" : "High Activity"
+        }));
+
+        const spec5 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": activityData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "activity_level"]
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "opacity": 0.8
+          },
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {
+                "title": "Number of People"
+              }
+            },
+            "color": {
+              "field": "activity_level",
+              "type": "nominal",
+              "scale": {
+                "domain": ["No Activity", "Low Activity", "Moderate Activity", "High Activity"],
+                "range": ["#ff5252", "#ffab40", "#69f0ae", "#00e676"]
+              },
+              "legend": {
+                "title": "Activity Level",
+                "orient": "bottom"
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "activity_level", "title": "Activity Level"},
+              {"field": "count", "title": "Count"}
+            ]
+          }
+        };
+
+        // Sixth Chart - Water Consumption
+        const waterData = data.filter(d => d.Tenyezok === 'WATER').map(d => ({
+          obesity_level: d.Ob_Type,
+          water_level: d.Index === 1 ? "Less than 1L" :
+                      d.Index === 2 ? "1-2L" :
+                      d.Index === 3 ? "2-3L" : "More than 3L"
+        }));
+
+        const spec6 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": waterData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "water_level"]
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "opacity": 0.8
+          },
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {
+                "title": "Number of People"
+              }
+            },
+            "color": {
+              "field": "water_level",
+              "type": "nominal",
+              "scale": {
+                "domain": ["Less than 1L", "1-2L", "2-3L", "More than 3L"],
+                "range": ["#ff5252", "#42a5f5", "#29b6f6", "#0288d1"]
+              },
+              "legend": {
+                "title": "Daily Water Consumption",
+                "orient": "bottom"
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "water_level", "title": "Water Consumption"},
+              {"field": "count", "title": "Count"}
+            ]
+          }
+        };
+
+        // Seventh Chart - Meals per Day
+        const mealData = data.filter(d => d.Tenyezok === 'MEALperDAY').map(d => ({
+          obesity_level: d.Ob_Type,
+          meal_frequency: d.Index <= 2 ? "1-2 Meals" :
+                         d.Index === 3 ? "3 Meals" :
+                         d.Index === 4 ? "4 Meals" : "5+ Meals"
+        }));
+
+        const spec7 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": mealData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "meal_frequency"]
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "opacity": 0.8
+          },
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right"
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {
+                "title": "Number of People"
+              }
+            },
+            "color": {
+              "field": "meal_frequency",
+              "type": "nominal",
+              "scale": {
+                "domain": ["1-2 Meals", "3 Meals", "4 Meals", "5+ Meals"],
+                "range": ["#ff8a65", "#ffd54f", "#81c784", "#4caf50"]
+              },
+              "legend": {
+                "title": "Daily Meal Frequency",
+                "orient": "bottom"
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "meal_frequency", "title": "Meals per Day"},
+              {"field": "count", "title": "Count"}
+            ]
+          }
+        };
+
+        // Eighth Chart - Transportation Method
+        const transportData = data.filter(d => d.Tenyezok === 'TRANS').map(d => ({
+          obesity_level: d.Ob_Type,
+          transport: d.Index
+        }));
+
+        const spec8 = {
+          "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+          "data": { "values": transportData },
+          "width": 800,
+          "height": 400,
+          "transform": [
+            {
+              "aggregate": [{
+                "op": "count",
+                "as": "count"
+              }],
+              "groupby": ["obesity_level", "transport"]
+            }
+          ],
+          "mark": {
+            "type": "bar",
+            "opacity": 1,
+            "stroke": "white",
+            "strokeWidth": 2,
+            "width": {"band": 0.9}
+          },
+          "encoding": {
+            "x": {
+              "field": "obesity_level",
+              "type": "ordinal",
+              "sort": [
+                "Insufficient_Weight",
+                "Normal_Weight",
+                "Obesity_Type_I",
+                "Obesity_Type_II",
+                "Obesity_Type_III",
+                "Overweight_Level_I",
+                "Overweight_Level_II"
+              ],
+              "axis": {
+                "title": "Obesity Level",
+                "labelAngle": -45,
+                "labelAlign": "right",
+                "titleFontSize": 14,
+                "labelFontSize": 12
+              },
+              "scale": {
+                "padding": 0.1
+              }
+            },
+            "y": {
+              "field": "count",
+              "type": "quantitative",
+              "stack": true,
+              "axis": {
+                "title": "Number of People",
+                "minExtent": 30,
+                "titleFontSize": 14,
+                "labelFontSize": 12
+              },
+              "scale": {
+                "domainMin": 0,
+                "nice": true
+              }
+            },
+            "color": {
+              "field": "transport",
+              "type": "nominal",
+              "scale": {
+                "domain": ["Walking", "Bike", "Motorbike", "Public_Transportation", "Automobile"],
+                "range": ["#1b5e20", "#00e676", "#ffd700", "#1565c0", "#c62828"]
+              },
+              "legend": {
+                "title": "Transportation Method",
+                "orient": "bottom",
+                "labelFontSize": 12,
+                "titleFontSize": 14,
+                "symbolSize": 120,
+                "symbolStrokeWidth": 2,
+                "symbolStrokeColor": "white",
+                "padding": 10,
+                "rowPadding": 8
+              }
+            },
+            "tooltip": [
+              {"field": "obesity_level", "title": "Obesity Level"},
+              {"field": "transport", "title": "Transportation Method"},
+              {"field": "count", "title": "Count"}
+            ]
+          },
+          "config": {
+            "bar": {
+              "spacing": 0
+            },
+            "view": {
+              "stroke": null,
+              "cornerRadius": 0
+            },
+            "axis": {
+              "grid": false
+            }
+          }
+        };
+
+        // Embed all visualizations
+        vegaEmbed('#chart1', spec1);
+        vegaEmbed('#chart2', spec2);
+        vegaEmbed('#chart3', spec3);
+        vegaEmbed('#chart4', spec4);
+        vegaEmbed('#chart5', spec5);
+        vegaEmbed('#chart6', spec6);
+        vegaEmbed('#chart7', spec7);
+        vegaEmbed('#chart8', spec8);
+      });
+  </script>
+</body>
+</html> 
