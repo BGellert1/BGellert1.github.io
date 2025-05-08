@@ -277,7 +277,7 @@
     document.querySelector('[data-theme="minimal"]').classList.add('active');
 
     // Load and process the data
-    fetch('https://raw.githubusercontent.com/BGellert1/BGellert1.github.io/refs/heads/main/df3.json')
+    fetch('df3.json')
       .then(response => response.json())
       .then(data => {
         // First Chart (Age Distribution) - existing code

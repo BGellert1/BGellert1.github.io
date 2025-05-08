@@ -8,14 +8,14 @@
 /* Theme Selector Styles */
 .theme-selector {
   position: fixed;
-  top: 360px;
+  top: 420px;
   left: 20px;
-  width: 220px;
+  width: 200px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.9);
+  gap: 4px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -23,9 +23,9 @@
 
 .theme-btn {
   width: 100%;
-  padding: 6px 12px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
   transition: all 0.2s ease;
@@ -47,18 +47,13 @@ body {
   padding: 20px;
   transition: all 0.3s ease;
   min-height: 100vh;
+  scroll-snap-type: y proximity;
 }
 
 .container {
-  margin-left: 260px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  max-width: calc(100% - 280px);
+  margin-left: 240px;
   padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
+  max-width: calc(100% - 260px);
 }
 
 h1, h2 {
@@ -67,50 +62,244 @@ h1, h2 {
   width: 100%;
 }
 
-.chart {
-  margin-bottom: 60px;
-  padding: 20px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  width: 100%;
-  min-height: calc(100vh - 140px);
+.chart-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  scroll-margin-top: 20px;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 30px;
+  width: 100%;
+  max-width: 1200px;
+  height: 100vh;
+  padding: 20px 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
-.chart > div {
+.chart-wrapper {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chart {
   width: 100% !important;
-  height: 100% !important;
+  height: calc(100vh - 100px) !important;
 }
 
-.theme-selector {
-  text-align: center;
-  margin-bottom: 30px;
-  padding: 10px;
+.explanation-wrapper {
+  flex: 1;
+  min-width: 0;
+  max-width: 400px;
+  overflow-y: auto;
+  padding: 20px;
+  background-color: var(--bg-color, #ffffff);
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.theme-btn {
-  padding: 10px 20px;
-  margin: 0 5px;
+.info-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background-color: #808080;
+  color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 36px;
+}
+
+.info-btn::before {
+  content: '';
+  width: 24px;
+  height: 24px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.button-text {
+  width: 100%;
+  text-align: center;
+  z-index: 1;
   transition: all 0.3s ease;
 }
 
-.theme-btn.active {
-  transform: scale(1.05);
-  font-weight: bold;
+.info-btn.active {
+  background-color: #2ecc71;
+}
+
+.info-btn.active::before {
+  transform: translate(calc(100% + 300px), -50%);
+}
+
+.info-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.info-btn:active {
+  transform: translateY(0);
+}
+
+/* Override theme-specific styles for the toggle button */
+body.light .info-btn,
+body.dark .info-btn,
+body.minimal .info-btn,
+body.modern .info-btn,
+body.colorful .info-btn,
+body.pastel .info-btn,
+body.darkblue .info-btn {
+  background-color: #808080;
+}
+
+body.light .info-btn.active,
+body.dark .info-btn.active,
+body.minimal .info-btn.active,
+body.modern .info-btn.active,
+body.colorful .info-btn.active,
+body.pastel .info-btn.active,
+body.darkblue .info-btn.active {
+  background-color: #2ecc71;
+}
+
+.info-box {
+  display: none;
+  width: 100%;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.info-box p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+.info-box p:last-child {
+  margin-bottom: 0;
+}
+
+.summary-section {
+  min-height: 100vh;
+  padding: 40px;
+  margin-top: 40px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summary-content {
+  color: var(--text-color);
+}
+
+.summary-content h3 {
+  margin: 20px 0 15px;
+  font-size: 1.3rem;
+}
+
+.summary-content h3:first-child {
+  margin-top: 0;
+}
+
+.summary-content ul {
+  margin: 0 0 20px 20px;
+  padding: 0;
+}
+
+.summary-content li {
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.summary-content p {
+  margin-bottom: 15px;
+  line-height: 1.6;
+}
+
+/* Theme-specific styles */
+body.light .info-box,
+body.light .summary-section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+body.dark .info-box,
+body.dark .summary-section {
+  background-color: #2d2d2d;
+  border: 1px solid #404040;
+}
+
+body.minimal .info-box,
+body.minimal .summary-section {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+body.modern .info-box,
+body.modern .summary-section {
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+body.colorful .info-box,
+body.colorful .summary-section {
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+body.pastel .info-box,
+body.pastel .summary-section {
+  background-color: #fff5f5;
+  border: 1px solid #ffe0e0;
+}
+
+body.darkblue .info-box,
+body.darkblue .summary-section {
+  background-color: #2b5278;
+  border: 1px solid #34649e;
 }
 
 /* Light Theme */
 body.light {
   background-color: #ffffff;
   color: #333333;
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 body.light .chart {
@@ -136,6 +325,9 @@ body.light .theme-btn.active {
 body.dark {
   background-color: #1a1a1a;
   color: #ffffff;
+  --bg-color: #2d2d2d;
+  --text-color: #ffffff;
+  --shadow-color: rgba(255, 255, 255, 0.1);
 }
 
 body.dark .chart {
@@ -161,6 +353,9 @@ body.dark .theme-btn.active {
 body.minimal {
   background-color: #ffffff;
   color: #333333;
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --shadow-color: rgba(0, 0, 0, 0.05);
 }
 
 body.minimal .chart {
@@ -189,6 +384,9 @@ body.minimal .theme-btn.active {
 body.modern {
   background-color: #f0f2f5;
   color: #2c3e50;
+  --bg-color: #ffffff;
+  --text-color: #2c3e50;
+  --shadow-color: rgba(0, 0, 0, 0.1);
 }
 
 body.modern .chart {
@@ -218,6 +416,9 @@ body.modern .theme-btn.active {
 body.colorful {
   background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
   color: #2c3e50;
+  --bg-color: rgba(255, 255, 255, 0.9);
+  --text-color: #2c3e50;
+  --shadow-color: rgba(0, 0, 0, 0.15);
 }
 
 body.colorful .chart {
@@ -246,6 +447,9 @@ body.colorful .theme-btn.active {
 body.pastel {
   background-color: #f8e5e5;
   color: #5d4037;
+  --bg-color: #fff5f5;
+  --text-color: #5d4037;
+  --shadow-color: rgba(0, 0, 0, 0.05);
 }
 
 body.pastel .chart {
@@ -274,6 +478,9 @@ body.pastel .theme-btn.active {
 body.darkblue {
   background-color: #1e3d59;
   color: #ffffff;
+  --bg-color: #2b5278;
+  --text-color: #ffffff;
+  --shadow-color: rgba(0, 0, 0, 0.2);
 }
 
 body.darkblue .chart {
@@ -299,35 +506,63 @@ body.darkblue .theme-btn.active {
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  .chart-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
   .chart {
-    min-height: calc(100vh - 180px);
-    padding: 10px;
+    height: calc(100vh - 200px) !important;
   }
 
-  .vega-embed canvas {
-    max-height: calc(100vh - 220px) !important;
+  .explanation-wrapper {
+    max-width: 100%;
+    max-height: none;
   }
+}
 
+@media (max-width: 768px) {
   .container {
+    margin-left: 0;
+    margin-top: 120px;
+    max-width: 100%;
     padding: 10px;
-    margin-top: 40px;
+  }
+
+  .chart {
+    height: calc(100vh - 300px) !important;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    padding: 8px;
   }
 
   .theme-selector {
+    position: fixed;
+    top: 50px;
+    left: 0;
+    width: 100%;
+    flex-direction: row;
     flex-wrap: wrap;
-  }
-  
-  .theme-btn {
-    margin: 5px;
-  }
-  
-  h1 {
-    font-size: 24px;
+    justify-content: center;
+    border-radius: 0;
+    padding: 8px;
+    gap: 4px;
   }
 
-  h2 {
-    font-size: 20px;
+  .theme-btn {
+    width: auto;
+  }
+
+  .description-section,
+  .summary-section {
+    padding: 20px;
   }
 }
 
@@ -359,39 +594,27 @@ body.darkblue .theme-btn.active {
   position: fixed;
   top: 20px;
   left: 20px;
-  width: 220px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px;
+  width: 200px;
+  z-index: 1000;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
   border-radius: 8px;
+  padding: 10px;
 }
 
 .nav-link {
-  width: 100%;
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s ease;
-  text-align: left;
+  display: block;
+  padding: 6px 10px;
+  margin-bottom: 3px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
   text-decoration: none;
   color: inherit;
-  background: rgba(0, 0, 0, 0.05);
+  font-size: 13px;
 }
 
 .nav-link:hover {
-  background: rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
-}
-
-.nav-link.active {
-  background: rgba(0, 0, 0, 0.15);
-  font-weight: 600;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Theme-specific navigation styles */
@@ -501,93 +724,62 @@ body.darkblue .nav-link.active {
   box-shadow: 0 0 10px rgba(74,139,201,0.5);
 }
 
-/* Adjust container margin to account for sidebar */
-.container {
-  margin-left: 260px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  max-width: calc(100% - 280px);
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .nav-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    white-space: nowrap;
-    border-radius: 0;
-    padding: 8px;
-    gap: 8px;
-  }
+.description-section {
+  min-height: 100vh;
+  padding: 40px;
+  margin-bottom: 40px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background-color: var(--bg-color);
+  padding: 2rem;
+  margin: 2rem 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-  .theme-selector {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    border-radius: 0;
-    padding: 8px;
-    gap: 8px;
-  }
+.description-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-  .theme-btn {
-    width: auto;
-  }
+.description-content h3 {
+  color: var(--text-color);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.2rem;
+}
 
-  .container {
-    margin-left: 0;
-    margin-top: 140px;
-    max-width: 100%;
-    padding: 10px;
-  }
+.description-content p {
+  color: var(--text-color);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.description-content h3:first-child {
+  margin-top: 0;
+}
+
+/* Adjust scroll margin to account for fixed navigation */
+.chart-container {
+  scroll-margin-top: 20px;
+}
+
+/* Add scroll snap */
+.chart-container {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .panel-title {
   margin: 0 0 6px 0;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   text-align: center;
   width: 100%;
   color: inherit;
-}
-
-h2 {
-  margin-bottom: 30px;
-  text-align: center;
-  width: 100%;
-  scroll-margin-top: 20px;
-}
-
-/* Hide all charts and titles by default */
-.chart, h2 {
-  display: none;
-}
-
-/* Show all by default if nothing is targeted */
-body:not(:has(h2:target)) .chart,
-body:not(:has(h2:target)) h2 {
-  display: flex;
-}
-
-/* Show only the targeted title and its chart */
-h2:target {
-  display: block !important;
-}
-
-h2:target + .chart {
-  display: flex !important;
-}
-
-/* Smooth scrolling */
-html {
-  scroll-behavior: smooth;
 } 
