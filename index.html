@@ -309,6 +309,10 @@
         const maxCount = Math.max(...Object.values(counts));
 
         // First Chart Specification (existing)
+        const embedOpts = {
+          actions: false  // This removes the three-dots menu
+        };
+
         const spec1 = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
           "data": { "values": ageData },
@@ -365,12 +369,7 @@
                 "title": "Gender",
                 "labelFontSize": 12
               }
-            },
-            "tooltip": [
-              {"field": "age_group", "title": "Age Group"},
-              {"field": "count", "title": "Count"},
-              {"field": "Gender"}
-            ]
+            }
           },
           "config": {
             "view": {"stroke": null},
@@ -383,6 +382,11 @@
             }
           }
         };
+
+        // Remove tooltip from spec1
+        if (spec1.encoding && spec1.encoding.tooltip) {
+          delete spec1.encoding.tooltip;
+        }
 
         // Second Chart - Obesity Levels Distribution
         const obesityData = data.filter(d => d.Tenyezok === 'AGE').map(d => ({
@@ -468,11 +472,7 @@
                 "range": ["#98ee90", "#43a047", "#f44336", "#d32f2f", "#b71c1c", "#ffd54f", "#ff9800"]
               },
               "legend": null
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "count", "title": "Count"}
-            ]
+            }
           },
           "config": {
             "view": {"stroke": null},
@@ -483,7 +483,7 @@
           }
         };
 
-        // Third Chart - Family History of Obesity
+        // Third Chart - Family History of Obesity (Grouped Bar Chart)
         const familyData = data.filter(d => d.Tenyezok === 'FAM_OVER').map(d => ({
           obesity_level: d.Ob_Type,
           family_history: d.Index === 1 ? 'Yes' : 'No'
@@ -501,17 +501,17 @@
                 "as": "count"
               }],
               "groupby": ["obesity_level", "family_history"]
+            },
+            {
+              "calculate": "datum.count / 100",
+              "as": "percentage"
             }
           ],
-          "mark": {
-            "type": "bar",
-            "opacity": 0.8,
-            "cornerRadius": 4
-          },
+          "mark": "bar",
           "encoding": {
             "x": {
               "field": "obesity_level",
-              "type": "ordinal",
+              "type": "nominal",
               "sort": [
                 "Insufficient_Weight",
                 "Normal_Weight",
@@ -523,7 +523,6 @@
               ],
               "axis": {
                 "title": "Obesity Level",
-                "labelFontSize": 12,
                 "labelAngle": -45,
                 "labelAlign": "right"
               }
@@ -531,11 +530,11 @@
             "y": {
               "field": "count",
               "type": "quantitative",
-              "stack": true,
-              "axis": {
-                "title": "Count",
-                "labelFontSize": 12
-              }
+              "axis": {"title": "Number of People"}
+            },
+            "xOffset": {
+              "field": "family_history",
+              "type": "nominal"
             },
             "color": {
               "field": "family_history",
@@ -544,28 +543,12 @@
                 "domain": ["Yes", "No"],
                 "range": ["#ff7043", "#90a4ae"]
               },
-              "legend": {
-                "title": "Family History of Obesity",
-                "orient": "bottom",
-                "labelFontSize": 12
-              }
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "family_history", "title": "Family History"},
-              {"field": "count", "title": "Count"}
-            ]
-          },
-          "config": {
-            "view": {"stroke": null},
-            "axis": {
-              "grid": false,
-              "titleFontSize": 14
+              "legend": {"title": "Family History of Obesity"}
             }
           }
         };
 
-        // Fourth Chart - High Calorie Food Consumption
+        // Fourth Chart - High Calorie Food Consumption (Heat Map)
         const calorieData = data.filter(d => d.Tenyezok === 'HIGH_CAL').map(d => ({
           obesity_level: d.Ob_Type,
           high_calorie: d.Index === 1 ? 'Yes' : 'No'
@@ -583,17 +566,25 @@
                 "as": "count"
               }],
               "groupby": ["obesity_level", "high_calorie"]
+            },
+            {
+              "joinaggregate": [{
+                "op": "sum",
+                "field": "count",
+                "as": "total"
+              }],
+              "groupby": ["obesity_level"]
+            },
+            {
+              "calculate": "datum.count/datum.total",
+              "as": "percentage"
             }
           ],
-          "mark": {
-            "type": "bar",
-            "opacity": 0.8,
-            "cornerRadius": 4
-          },
+          "mark": "rect",
           "encoding": {
             "x": {
               "field": "obesity_level",
-              "type": "ordinal",
+              "type": "nominal",
               "sort": [
                 "Insufficient_Weight",
                 "Normal_Weight",
@@ -605,44 +596,23 @@
               ],
               "axis": {
                 "title": "Obesity Level",
-                "labelFontSize": 12,
                 "labelAngle": -45,
                 "labelAlign": "right"
               }
             },
             "y": {
-              "field": "count",
-              "type": "quantitative",
-              "stack": true,
-              "axis": {
-                "title": "Count",
-                "labelFontSize": 12
-              }
-            },
-            "color": {
               "field": "high_calorie",
               "type": "nominal",
-              "scale": {
-                "domain": ["Yes", "No"],
-                "range": ["#ffa726", "#90a4ae"]
-              },
-              "legend": {
-                "title": "High Calorie Food Consumption",
-                "orient": "bottom",
-                "labelFontSize": 12
-              }
+              "axis": {"title": "High Calorie Diet"}
             },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "high_calorie", "title": "High Calorie Diet"},
-              {"field": "count", "title": "Count"}
-            ]
-          },
-          "config": {
-            "view": {"stroke": null},
-            "axis": {
-              "grid": false,
-              "titleFontSize": 14
+            "color": {
+              "field": "percentage",
+              "type": "quantitative",
+              "scale": {
+                "scheme": "orangered",
+                "domain": [0, 1]
+              },
+              "legend": {"title": "Percentage"}
             }
           }
         };
@@ -715,12 +685,7 @@
                 "orient": "bottom",
                 "labelFontSize": 12
               }
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "activity_level", "title": "Activity Level"},
-              {"field": "count", "title": "Count"}
-            ]
+            }
           },
           "config": {
             "view": {"stroke": null},
@@ -731,7 +696,7 @@
           }
         };
 
-        // Sixth Chart - Water Consumption
+        // Sixth Chart - Water Consumption (Bubble Chart)
         const waterData = data.filter(d => d.Tenyezok === 'WATER').map(d => ({
           obesity_level: d.Ob_Type,
           water_level: d.Index === 1 ? "Less than 1L" :
@@ -753,15 +718,11 @@
               "groupby": ["obesity_level", "water_level"]
             }
           ],
-          "mark": {
-            "type": "bar",
-            "opacity": 0.8,
-            "cornerRadius": 4
-          },
+          "mark": "circle",
           "encoding": {
             "x": {
               "field": "obesity_level",
-              "type": "ordinal",
+              "type": "nominal",
               "sort": [
                 "Insufficient_Weight",
                 "Normal_Weight",
@@ -773,19 +734,20 @@
               ],
               "axis": {
                 "title": "Obesity Level",
-                "labelFontSize": 12,
                 "labelAngle": -45,
                 "labelAlign": "right"
               }
             },
             "y": {
+              "field": "water_level",
+              "type": "nominal",
+              "axis": {"title": "Water Consumption"}
+            },
+            "size": {
               "field": "count",
               "type": "quantitative",
-              "stack": true,
-              "axis": {
-                "title": "Number of People",
-                "labelFontSize": 12
-              }
+              "scale": {"range": [100, 2000]},
+              "legend": {"title": "Number of People"}
             },
             "color": {
               "field": "water_level",
@@ -793,24 +755,7 @@
               "scale": {
                 "domain": ["Less than 1L", "1-2L", "2-3L", "More than 3L"],
                 "range": ["#ff5252", "#42a5f5", "#29b6f6", "#0288d1"]
-              },
-              "legend": {
-                "title": "Daily Water Consumption",
-                "orient": "bottom",
-                "labelFontSize": 12
               }
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "water_level", "title": "Water Consumption"},
-              {"field": "count", "title": "Count"}
-            ]
-          },
-          "config": {
-            "view": {"stroke": null},
-            "axis": {
-              "grid": false,
-              "titleFontSize": 14
             }
           }
         };
@@ -825,9 +770,9 @@
 
         const spec7 = {
           "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-          "data": { "values": mealData },
           "width": 800,
           "height": 400,
+          "data": { "values": mealData },
           "transform": [
             {
               "aggregate": [{
@@ -835,6 +780,18 @@
                 "as": "count"
               }],
               "groupby": ["obesity_level", "meal_frequency"]
+            },
+            {
+              "joinaggregate": [{
+                "op": "sum",
+                "field": "count",
+                "as": "total"
+              }],
+              "groupby": ["obesity_level"]
+            },
+            {
+              "calculate": "datum.count/datum.total * 100",
+              "as": "percentage"
             }
           ],
           "mark": {
@@ -845,7 +802,7 @@
           "encoding": {
             "x": {
               "field": "obesity_level",
-              "type": "ordinal",
+              "type": "nominal",
               "sort": [
                 "Insufficient_Weight",
                 "Normal_Weight",
@@ -857,18 +814,20 @@
               ],
               "axis": {
                 "title": "Obesity Level",
-                "labelFontSize": 12,
                 "labelAngle": -45,
                 "labelAlign": "right"
               }
             },
+            "xOffset": {
+              "field": "meal_frequency",
+              "sort": ["1-2 Meals", "3 Meals", "4 Meals", "5+ Meals"]
+            },
             "y": {
-              "field": "count",
+              "field": "percentage",
               "type": "quantitative",
-              "stack": true,
               "axis": {
-                "title": "Number of People",
-                "labelFontSize": 12
+                "title": "Percentage of People (%)",
+                "format": ".1f"
               }
             },
             "color": {
@@ -879,27 +838,24 @@
                 "range": ["#ff8a65", "#ffd54f", "#81c784", "#4caf50"]
               },
               "legend": {
-                "title": "Daily Meal Frequency",
-                "orient": "bottom",
-                "labelFontSize": 12
+                "title": "Meals per Day",
+                "orient": "bottom"
               }
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "meal_frequency", "title": "Meals per Day"},
-              {"field": "count", "title": "Count"}
-            ]
+            }
           },
           "config": {
             "view": {"stroke": null},
             "axis": {
-              "grid": false,
-              "titleFontSize": 14
+              "grid": true,
+              "gridColor": "#ddd",
+              "gridOpacity": 0.5,
+              "titleFontSize": 14,
+              "labelFontSize": 12
             }
           }
         };
 
-        // Eighth Chart - Transportation Method
+        // Eighth Chart - Transportation Method (Treemap)
         const transportData = data.filter(d => d.Tenyezok === 'TRANS').map(d => ({
           obesity_level: d.Ob_Type,
           transport: d.Index
@@ -919,17 +875,11 @@
               "groupby": ["obesity_level", "transport"]
             }
           ],
-          "mark": {
-            "type": "bar",
-            "opacity": 0.8,
-            "cornerRadius": 4,
-            "stroke": "white",
-            "strokeWidth": 2
-          },
+          "mark": "rect",
           "encoding": {
             "x": {
               "field": "obesity_level",
-              "type": "ordinal",
+              "type": "nominal",
               "sort": [
                 "Insufficient_Weight",
                 "Normal_Weight",
@@ -938,60 +888,26 @@
                 "Obesity_Type_III",
                 "Overweight_Level_I",
                 "Overweight_Level_II"
-              ],
-              "axis": {
-                "title": "Obesity Level",
-                "labelFontSize": 12,
-                "labelAngle": -45,
-                "labelAlign": "right"
-              }
+              ]
             },
-            "y": {
+            "y": {"field": "transport", "type": "nominal"},
+            "color": {
               "field": "count",
               "type": "quantitative",
-              "stack": true,
-              "axis": {
-                "title": "Number of People",
-                "labelFontSize": 12
-              }
-            },
-            "color": {
-              "field": "transport",
-              "type": "nominal",
-              "scale": {
-                "domain": ["Walking", "Bike", "Motorbike", "Public_Transportation", "Automobile"],
-                "range": ["#1b5e20", "#00e676", "#ffd700", "#1565c0", "#c62828"]
-              },
-              "legend": {
-                "title": "Transportation Method",
-                "orient": "bottom",
-                "labelFontSize": 12
-              }
-            },
-            "tooltip": [
-              {"field": "obesity_level", "title": "Obesity Level"},
-              {"field": "transport", "title": "Transportation Method"},
-              {"field": "count", "title": "Count"}
-            ]
-          },
-          "config": {
-            "view": {"stroke": null},
-            "axis": {
-              "grid": false,
-              "titleFontSize": 14
+              "scale": {"scheme": "blues"}
             }
           }
         };
 
-        // Embed all visualizations
-        vegaEmbed('#chart1', spec1);
-        vegaEmbed('#chart2', spec2);
-        vegaEmbed('#chart3', spec3);
-        vegaEmbed('#chart4', spec4);
-        vegaEmbed('#chart5', spec5);
-        vegaEmbed('#chart6', spec6);
-        vegaEmbed('#chart7', spec7);
-        vegaEmbed('#chart8', spec8);
+        // Embed all visualizations with the new options
+        vegaEmbed('#chart1', spec1, embedOpts);
+        vegaEmbed('#chart2', spec2, embedOpts);
+        vegaEmbed('#chart3', spec3, embedOpts);
+        vegaEmbed('#chart4', spec4, embedOpts);
+        vegaEmbed('#chart5', spec5, embedOpts);
+        vegaEmbed('#chart6', spec6, embedOpts);
+        vegaEmbed('#chart7', spec7, embedOpts);
+        vegaEmbed('#chart8', spec8, embedOpts);
       });
   </script>
 </body>
